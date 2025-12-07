@@ -3,10 +3,11 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { PRODUCT_CREATE_RESET } from "../../Redux/Constants/ProductConstants";
-import { createProduct } from "./../../Redux/Actions/ProductActions";
+import { createProduct } from "../../Redux/Actions/ProductActions";
 import Toast from "../LoadingError/Toast";
 import Message from "../LoadingError/Error";
 import Loading from "../LoadingError/Loading";
+import ImageBase64Upload from "../ImageBase64Upload/ImageBase64Upload";
 
 const ToastObjects = {
   pauseOnFocusLoss: false,
@@ -17,12 +18,13 @@ const ToastObjects = {
 const AddProductMain = () => {
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
+  const [categoryId, setCategoryId] = useState("");
   const [price, setPrice] = useState(0);
   const [image, setImage] = useState("");
   const [imageBanner, setImageBanner] = useState("");
   const [countInStock, setCountInStock] = useState(0);
   const [description, setDescription] = useState("");
-
+  console.log('category :>> ', category);
   const dispatch = useDispatch();
 
   const categoriesList = useSelector((state) => state.categoriesList);
@@ -33,10 +35,11 @@ const AddProductMain = () => {
 
   useEffect(() => {
     if (product) {
-      toast.success("Product Added", ToastObjects);
+      toast.success("Thêm sản phẩm thành công", ToastObjects);
       dispatch({ type: PRODUCT_CREATE_RESET });
       setName("");
       setCategory("");
+      setCategoryId("");
       setDescription("");
       setCountInStock(0);
       setImage("");
@@ -47,7 +50,7 @@ const AddProductMain = () => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    dispatch(createProduct(name, category, price, description, image, imageBanner, countInStock));
+    dispatch(createProduct(name,categoryId, category, price, description, image, imageBanner, countInStock));
   };
 
   return (
@@ -91,10 +94,22 @@ const AddProductMain = () => {
                     <label htmlFor="product_category" className="form-label">
                       Loại mặt hàng
                     </label>
-                    <select className="form-select"
-                      onChange={(e) => setCategory(e.target.value)}
-                      value={category}
-                      id="product_category">
+                    <select
+                      className="form-select"
+                      onChange={(e) => {
+                        const selectedIndex = e.target.selectedIndex;
+                        const selectedOption = e.target.options[selectedIndex];
+
+                        const id = selectedOption.value;
+                        const name = selectedOption.text;
+
+                        setCategoryId(id);
+                        setCategory(name);   // ✅ set tên loại
+                      }}
+                      value={categoryId}
+                      id="product_category"
+                    >
+
                       {loadingCate ? (
                         <div className='mb-5'>
                           <Loading />
@@ -153,28 +168,16 @@ const AddProductMain = () => {
                     ></textarea>
                   </div>
                   <div className="mb-4">
-                    <label className="form-label">Hình ảnh</label>
-                    <input
-                      className="form-control"
-                      type="text"
-                      placeholder="URL Hình ảnh"
-                      value={image}
-                      required
-                      onChange={(e) => setImage(e.target.value)}
+                    <ImageBase64Upload
+                      label="Hình ảnh sản phẩm"
+                      onChange={(base64) => setImage(base64)}
                     />
-                    <input className="form-control mt-3" type="file" />
                   </div>
                   <div className="mb-4">
-                    <label className="form-label">Ảnh bìa</label>
-                    <input
-                      className="form-control"
-                      type="text"
-                      placeholder="URL Hình ảnh"
-                      value={imageBanner}
-                      required
-                      onChange={(e) => setImageBanner(e.target.value)}
+                    <ImageBase64Upload
+                      label="Ảnh banner"
+                      onChange={(base64) => setImageBanner(base64)}
                     />
-                    <input className="form-control mt-3" type="file" />
                   </div>
                 </div>
               </div>

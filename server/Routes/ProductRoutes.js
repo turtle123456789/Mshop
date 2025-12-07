@@ -11,20 +11,29 @@ productRoute.get(
   asyncHandler(async (req, res) => {
     const pageSize = 12;
     const page = Number(req.query.pageNumber) || 1;
-    const keyword = req.query.keyword
-      ? {
-        name: {
-          $regex: req.query.keyword,
-          $options: "i",
-        },
-      }
-      : {};
-    const count = await Product.countDocuments({ ...keyword });
-    const products = await Product.find({ ...keyword })
+
+    let keyword = {};
+    if (req.query.keyword && req.query.keyword.trim() !== "") {
+      keyword = {
+        name: { $regex: req.query.keyword.trim(), $options: "i" }
+      };
+    }
+
+    console.log("keyword:", keyword);
+
+    const count = await Product.countDocuments(keyword);
+
+    const products = await Product.find(keyword)
       .limit(pageSize)
       .skip(pageSize * (page - 1))
       .sort({ _id: -1 });
-    res.json({ products, page, pages: Math.ceil(count / pageSize) });
+
+    res.json({
+      products,
+      page,
+      pages: Math.ceil(count / pageSize),
+      totalProducts: count
+    });
   })
 );
 
@@ -138,7 +147,7 @@ productRoute.post(
   protect,
   admin,
   asyncHandler(async (req, res) => {
-    const { name, categoryId, price, description, image, imageBanner, countInStock } = req.body;
+    const { name, categoryId,category,  price, description, image, imageBanner, countInStock } = req.body;
     const productExist = await Product.findOne({ name });
     if (productExist) {
       res.status(400);
@@ -147,6 +156,7 @@ productRoute.post(
       const product = new Product({
         name,
         categoryId,
+        category,
         price,
         description,
         image,
@@ -171,11 +181,12 @@ productRoute.put(
   protect,
   admin,
   asyncHandler(async (req, res) => {
-    const { name,categoryId, price, description, image,imageBanner, countInStock, discount } = req.body;
+    const { name,categoryId,category, price, description, image,imageBanner, countInStock, discount } = req.body;
     const product = await Product.findById(req.params.id);
     if (product) {
       product.name = name || product.name;
       product.categoryId = categoryId || product.categoryId;
+      product.category = category || product.category;
       product.price = price || product.price;
       product.description = description || product.description;
       product.image = image || product.image;

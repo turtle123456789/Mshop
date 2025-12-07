@@ -68,6 +68,11 @@ const productSchema = mongoose.Schema(
       require: true,
       default: "",
     },
+     category:{
+      type: String,
+      require: true,
+      default: "",
+    },
   },
   {
     timestamps: true,

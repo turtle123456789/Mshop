@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import Toast from "./../LoadingError/Toast";
+import Toast from "../LoadingError/Toast";
+import ImageBase64Upload from "../ImageBase64Upload/ImageBase64Upload";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   editProduct,
   updateProduct,
-} from "./../../Redux/Actions/ProductActions";
+} from "../../Redux/Actions/ProductActions";
 import { PRODUCT_UPDATE_RESET } from "../../Redux/Constants/ProductConstants";
 import { toast } from "react-toastify";
 import Message from "../LoadingError/Error";
@@ -63,6 +64,7 @@ const EditProductMain = (props) => {
       if (!product.name || product._id !== productId) {
         dispatch(editProduct(productId));
       } else {
+          console.log('categoryID :>> ', categoryID);
         setName(product.name);
         setCategoryID(product.categoryId);
         setDescription(product.description);
@@ -203,26 +205,41 @@ const EditProductMain = (props) => {
                           onChange={(e) => setDescription(e.target.value)}
                         ></textarea>
                       </div>
-                      <div className="mb-4">
-                        <label className="form-label">Hình ảnh</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          value={image}
-                          required
-                          onChange={(e) => setImage(e.target.value)}
-                        />
-                      </div>
-                      <div className="mb-4">
-                        <label className="form-label">Ảnh bìa</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          value={imageBanner}
-                          required
-                          onChange={(e) => setImageBanner(e.target.value)}
-                        />
-                      </div>
+                     <div className="mb-4">
+                      <ImageBase64Upload
+                        label="Hình ảnh sản phẩm"
+                        onChange={(base64) => setImage(base64)}
+                      />
+
+                      {image && (
+                        <div className="mt-2">
+                          <img
+                            src={image}
+                            alt="preview"
+                            style={{ width: "150px", borderRadius: "8px" }}
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                     <div className="mb-4">
+                      <ImageBase64Upload
+                        label="Ảnh banner"
+                        onChange={(base64) => setImageBanner(base64)}
+                      />
+
+                      {imageBanner && (
+                        <div className="mt-2">
+                          <img
+                            src={imageBanner}
+                            alt="preview"
+                            style={{ width: "250px", borderRadius: "8px" }}
+                          />
+                        </div>
+                      )}
+                    </div>
+
+
                       <div className="mb-4">
                         <label htmlFor="product_dicount" className="form-label">
                           Chương trình giảm giá

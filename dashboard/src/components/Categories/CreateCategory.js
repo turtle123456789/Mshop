@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { createCategory } from "../../Redux/Actions/CategoryActions";
+import { createCategory, listCategories } from "../../Redux/Actions/CategoryActions";
 import { CATEGORY_CREATE_RESET } from "../../Redux/Constants/CategoryConstants";
 import Message from "../LoadingError/Error";
 import Loading from "../LoadingError/Loading";
+import ImageBase64Upload from "../ImageBase64Upload/ImageBase64Upload";
 
 const ToastObjects = {
   pauseOnFocusLoss: false,
@@ -18,6 +19,7 @@ const CreateCategory = () => {
   const [image, setImage] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [resetImage, setResetImage] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -28,9 +30,13 @@ const CreateCategory = () => {
     if (category) {
       toast.success("Thêm Danh mục thành công", ToastObjects);
       dispatch({ type: CATEGORY_CREATE_RESET });
+
       setName("");
       setDescription("");
       setImage("");
+
+      setResetImage(prev => !prev); 
+      dispatch(listCategories());
     }
   }, [category, dispatch]);
 
@@ -59,18 +65,14 @@ const CreateCategory = () => {
               onChange={(e) => setName(e.target.value)}
             />
           </div>
-          <div className="mb-4">
-            <label className="form-label">Hình ảnh danh mục</label>
-            <input
-              className="form-control"
-              type="text"
-              placeholder="URL Hình ảnh"
-              value={image}
-              required
-              onChange={(e) => setImage(e.target.value)}
-            />
-            <input className="form-control" type="file" />
-          </div>
+         <div className="mb-4">
+          <ImageBase64Upload
+            key={resetImage} 
+            label="Hình ảnh danh mục"
+            onChange={(base64) => setImage(base64)}
+          />
+        </div>
+
           <div className="mb-4">
             <label className="form-label">Mô tả danh mục</label>
             <textarea

@@ -16,7 +16,7 @@ const DeliveryStatistics = () => {
               width: "100%",
               height: "350px",
             }}
-            src="https://charts.mongodb.com/charts-project-0-vuasm/embed/charts?id=6274d4e1-2e4a-4954-8d00-d816469c2f6f&maxDataAge=3600&theme=light&autoRefresh=true">
+            src="https://charts.mongodb.com/charts-project-0-yoprkbn/embed/charts?id=c835e18d-0e29-434b-a72a-d4c61886c49d&maxDataAge=14400&theme=light&autoRefresh=true">
           </iframe>
         </article>
       </div>

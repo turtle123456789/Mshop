@@ -6,6 +6,7 @@ import { editCategory, updateCategory } from "../../Redux/Actions/CategoryAction
 import { CATEGORY_UPDATE_RESET } from "../../Redux/Constants/CategoryConstants";
 import Message from "../LoadingError/Error";
 import Loading from "../LoadingError/Loading";
+import ImageBase64Upload from "../ImageBase64Upload/ImageBase64Upload";
 
 const ToastObjects = {
     pauseOnFocusLoss: false,
@@ -16,7 +17,7 @@ const ToastObjects = {
 
 const EditCategory = (props) => {
     const { categoryId } = props;
-
+    const [resetImage, setResetImage] = useState(false);
     const [categoryName, setCategoryName] = useState("");
     const [description, setDescription] = useState("");
     const [thumb, setThumb] = useState("");
@@ -36,7 +37,10 @@ const EditCategory = (props) => {
     useEffect(() => {
         if (successUpdate) {
             dispatch({ type: CATEGORY_UPDATE_RESET });
-            toast.success("Product Updated", ToastObjects);
+            toast.success("Cập nhật danh mục thành công", ToastObjects);
+
+            setResetImage(prev => !prev); // reset ảnh
+
         } else {
             if (!category.categoryName || category._id !== categoryId) {
                 dispatch(editCategory(categoryId));
@@ -117,13 +121,11 @@ const EditCategory = (props) => {
                                                 ></textarea>
                                             </div>
                                             <div className="mb-4">
-                                                <label className="form-label">Hình ảnh</label>
-                                                <input
-                                                    className="form-control"
-                                                    type="text"
-                                                    value={thumb}
-                                                    required
-                                                    onChange={(e) => setThumb(e.target.value)}
+                                                <ImageBase64Upload
+                                                    key={resetImage}                      
+                                                    label="Hình ảnh danh mục"
+                                                    defaultImage={thumb}             
+                                                    onChange={(base64) => setThumb(base64)} 
                                                 />
                                             </div>
                                         </>
